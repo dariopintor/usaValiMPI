@@ -1,0 +1,104 @@
+package usaValiMPI;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class comunicaValiMPI {
+
+    /**
+     * le o aquivo de entrada com os dados de teste e mostra cobertura obtida
+     * por cada um deles
+     * 
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void lerAquivivo() throws IOException, InterruptedException {
+
+        String nomeArq = "datasetGCD/dataset - 1.doc"; // Nome do arquivo,
+        String linha = "", dadoComAspas = "";
+        String criterioDeTeste = "todos-s-usos";
+        FileReader arq = new FileReader(nomeArq);
+        BufferedReader lerArq = new BufferedReader(arq);
+
+        linha = lerArq.readLine(); // le a primeira linha
+        dadoComAspas = "\"" + linha + "\" "; // variavel utilzado para o dado
+        
+        System.out.println("passei aqui");// ficar no formato "dado"
+        executaDado(dadoComAspas);
+        Thread.sleep(10000);
+        obtemCobertura(criterioDeTeste);
+        Thread.sleep(3000);
+
+        while (linha != null) {
+
+            dadoComAspas = "\"" + linha + "\" "; // ficar no formato "dado"
+
+            executaDado(dadoComAspas);
+            Thread.sleep(10000);
+            obtemCobertura(criterioDeTeste);
+            Thread.sleep(3000);
+
+            System.out.println("passei aqui");
+            linha = lerArq.readLine(); // le da segundo linha em diante
+        }
+
+        lerArq.close();
+
+        // System.out.print("Cobertura: "+ coberturaDoDado);
+    }
+
+    public void executaDado(String dado) throws IOException {
+
+        String cmd[] = {
+                "gnome-terminal",
+                "-x",
+                "bash",
+                "-c",
+                "/home/adminuser/Software/ValiMPI/vali_exec/vali_exec 1 run 4 gcd "
+                        + dado + "; exit echo '<enter>'; read" };
+
+        Runtime.getRuntime().exec(cmd, null, null);
+    }
+
+    /**
+     * obtem a cobertura do ultimo dado de dado de teste executado na ferramenta
+     * 
+     * @throws IOException
+     */
+    public void obtemCobertura(String criterio) throws IOException {
+
+        String cmd[] = {
+                "gnome-terminal",
+                "-x",
+                "bash",
+                "-c",
+                "/home/adminuser/Software/ValiMPI/vali_eval/vali_eval "
+                        + criterio
+                        + " 4 \"Master(0)\" \"Escravo(1,2,3)\" >> arquivo.doc; exit echo '<exit>'; read" };
+        Runtime.getRuntime().exec(cmd, null, null);
+    }
+
+}
+
+=====================================================================================================
+//algoritmo usado para comparar dois arrays e quando i == j marcar o vetor k, com o mesmo tamanho de dois
+//outros dois vetores, com 1
+
+String[] VetorI = {"1) 1-0", "2) 2-0", "3) 3-0" , "4) 4-0" };
+		String[] VetorJ = {"1) 1-0", "2) 2-0", "4) 4-0", ""  };
+		int[] VetorK = new int[VetorI.length];
+
+		for (int i = 0; i < VetorI.length; i++) {
+			for (int j = 0; j < VetorI.length; j++) {
+
+				if (VetorI[i] == VetorJ[j]) {
+					VetorK[i] = 1;
+				}
+			}// termina for para i
+
+		}// termina for para j
+
+		for (int i = 0; i < VetorI.length; i++) {
+			System.out.println(VetorK[i]);
+		}
