@@ -18,25 +18,18 @@ import java.io.PrintWriter;
 /***************************************************************************
 * passos importantes para usar o códio:
  * 1) chamar o método lerArquivo
- * 2) modificar o tamanho do vetor matriz tem que ter [i] [j], onde
- *  i = nº total de elementos requeridos do critério e j = nº da quantidade
- *  de dados de teste presente no arquivo que contém os dados de teste  *
  * 4) quando for critério de fluxo de dados com (todos-p-usos, todos-c-usos, todos-s-uso) o
  * argumento passado para o método split que está dentro do metodo pegaCobertura()
  * tem qeu mudar para ",  c" (virgula, espaço, espaço e c) ao invés de somente "," que é usado
- * para o critério de fluxo de controle
- 3)   o valor da condicao do if dentro do metodo escrevePlanilha() tem que
- * ser igual a quatidade de dados de teste presente no arquivo de entrada de dados de teste
-6) os valores das condiçoes i e j do último for do método escrevePlanilha() é respectivamente
-o valor da quantidaqde de elementos e quantidade de dados de teste.                                      									   *
- *                                                                         *
+ * para o critério de fluxo de controle                                                           *
  ***************************************************************************/
 public class Algoritmo {
 
 	
 	
 	static int quantElmentos = 0; //conta a quantidade de elementos req
-	int [][]matriz = new int[34][100]; 
+	int nElementosReq = 34, nDadoteste = 100;
+	int [][]matriz = new int[nElementosReq][nDadoteste]; 
 	static int nDadoTeste = 1;
 	
 	/**
@@ -60,7 +53,7 @@ public class Algoritmo {
 			// System.out.print("Passei aqui: "+ nDadoTeste);
 			dadoComAspas = "\"" + linha + "\" "; // variavel utilzado para o
 													// dado
-			ValiMPI.executaDado(String.valueOf(1), dadoComAspas);
+			ValiMPI.vali_exec(String.valueOf(1), dadoComAspas);
 			//Thread.sleep(3000);
 
 			System.out.println("Dado de teste: " + nDadoTeste);// ficar no
@@ -69,12 +62,11 @@ public class Algoritmo {
 //			String conteudo2 = "Critério de teste: " + criterioDeTeste;
 		//	escreverArquivo("arqCoberturaIndividual.txt", conteudo);
 			//escreverArquivo("arqCoberturaIndividualTodas-nos.txt", conteudo2);
-			ValiMPI.obtemCobertura(criterioDeTeste);
+			ValiMPI.vali_eval(criterioDeTeste);
 			//Thread.sleep(1000);
 			ValiMPI.pegaElemReq(criterioDeTeste + ".req");
 			ValiMPI.pegaLinhaElemCobertos("arqCoberturaIndividual.txt");
-			escrevePlanilha();
-			ValiMPI.renomearPasta(String.valueOf(nDadoTeste));
+			escrevePlanilha();	
 			linha = lerArq.readLine(); // le da segunda linha em diante
 			nDadoTeste++;
 		}
@@ -108,7 +100,7 @@ public class Algoritmo {
 			// System.out.print("Passei aqui: "+ nDadoTeste);
 			dadoComAspas = "\"" + linha + "\" "; // variavel utilzado para o
 													// dado
-			ValiMPI.executaDado(String.valueOf(1), dadoComAspas);
+			ValiMPI.vali_exec(String.valueOf(1), dadoComAspas);
 			//Thread.sleep(3000);
 
 			System.out.println("Dado de teste: " + nDadoTeste);// ficar no
@@ -117,13 +109,13 @@ public class Algoritmo {
 //			String conteudo2 = "Critério de teste: " + criterioDeTeste;
 			escreverArquivo("arqCoberturaIndividual.txt", conteudo);
 			//escreverArquivo("arqCoberturaIndividualTodas-nos.txt", conteudo2);
-			ValiMPI.obtemCobertura(criterioDeTeste);
+			ValiMPI.vali_eval(criterioDeTeste);
 			ValiMPI.renomearPasta(String.valueOf(nDadoTeste));
 			linha = lerArq.readLine(); // le da segunda linha em diante
 			nDadoTeste++;
 		}
 
-		ValiMPI.obtemCobertura(criterioDeTeste);
+		ValiMPI.vali_eval(criterioDeTeste);
 
 		// this.backup();
 		lerArq.close();
@@ -150,7 +142,7 @@ public class Algoritmo {
 			// System.out.print("Passei aqui: "+ nDadoTeste);
 			dadoComAspas = "\"" + linha + "\" "; // variavel utilzado para o
 													// dado
-			ValiMPI.executaDado(String.valueOf(nDado), dadoComAspas);			
+			ValiMPI.vali_exec(String.valueOf(nDado), dadoComAspas);			
 
 			System.out.println("Dado de teste: " + nDado);// ficar no																// formato
 
@@ -159,8 +151,45 @@ public class Algoritmo {
 			nDado++;
 		}
 
-		ValiMPI.obtemCobertura(criterioDeTeste);
+		ValiMPI.vali_eval(criterioDeTeste);
 
+		// this.backup();
+		lerArq.close();
+
+		// System.out.print("Cobertura: "+ coberturaDoDado);
+	}
+	
+	/**
+	 * ler o arquivo de dados e passar para o arquivo args dentro da pasta 0001 dando um
+	 *"/n" entre cada argumento do dado. obterm elementos. 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public void lerArquivoArgs( String nomeArq, String criterioDeTeste)
+			throws IOException, InterruptedException {
+
+		String linha = "", dado = "";
+		String []quebra = null;
+		FileReader arq = new FileReader(nomeArq);
+		BufferedReader lerArq = new BufferedReader(arq);
+		
+
+		linha = lerArq.readLine(); // le a primeira linha
+		while (linha != null) {
+			// System.out.print("Passei aqui: "+ nDadoTeste);
+			quebra = linha.split(" "); 
+			dado = quebra[0].trim() + "\n" + quebra[1].trim() + "\n" + quebra[2].trim() + "\n";																
+			escreverArquivoSobrescrevendo("valimpi/test_case0001/args", dado);														
+			ValiMPI.rerun("1");
+			System.out.println("Dado de teste: " + nDadoTeste);
+			ValiMPI.vali_eval(criterioDeTeste);
+			ValiMPI.pegaElemReq(criterioDeTeste + ".req");
+			ValiMPI.pegaLinhaElemCobertos("arqCoberturaIndividual.txt");
+			escrevePlanilha();	
+			linha = lerArq.readLine(); // le da segunda linha em diante
+			nDadoTeste++;
+		}
+		
 		// this.backup();
 		lerArq.close();
 
@@ -291,11 +320,11 @@ public class Algoritmo {
 							
 								//mostra a matris
 								
-								if (nDadoTeste ==100){
+								if (nDadoTeste == nDadoteste){
 								
 									
-								for(int i=0; i<34;  i++){ //valor da condição de i é igual a quantidade  de eleemntos requeridos  
-						            for(int j=0; j<100; j++){  
+								for(int i=0; i<nElementosReq;  i++){ //valor da condição de i é igual a quantidade  de eleemntos requeridos  
+						            for(int j=0; j<nDadoteste; j++){  
 						               
 						                System.out.print(matriz[i][j]+"\t");  
 						            }  
@@ -325,6 +354,15 @@ public class Algoritmo {
 				// adiciona nova linha no arquivo
 				conexao.newLine();
 				conexao.close();
+
+		}
+			
+			/** metodo usado para esquever em um arquivo @throws IOException */
+			public static void escreverArquivoSobrescrevendo(String caminho, String conteudo)throws IOException {
+				 BufferedWriter out = new BufferedWriter(new FileWriter(caminho));
+			     out.write(conteudo);
+			     out.flush();
+			     out.close();
 
 		}
 	
